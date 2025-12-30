@@ -1,0 +1,112 @@
+{
+  "responses": [
+    {
+      "userId": "cspia@daum.net",
+      "userName": "이현주",
+      "date": "2025-12-29",
+      "answers": [
+        {
+          "questionId": "q1",
+          "answer": 4
+        }
+      ],
+      "timestamp": "2025-12-29T16:23:46.051Z"
+    },
+    {
+      "userId": "cspia@daum.net",
+      "userName": "이현주",
+      "date": "2025-12-23",
+      "answers": [
+        {
+          "questionId": "q1",
+          "answer": 5
+        }
+      ],
+      "timestamp": "2025-12-29T16:23:57.741Z"
+    },
+    {
+      "userId": "user1",
+      "userName": "김철수",
+      "date": "2025-12-30",
+      "scores": [
+        {
+          "label": "최상화",
+          "score": 5
+        },
+        {
+          "label": "공감",
+          "score": 7
+        },
+        {
+          "label": "책임",
+          "score": 9
+        },
+        {
+          "label": "배움",
+          "score": 10
+        },
+        {
+          "label": "절친",
+          "score": 6
+        }
+      ],
+      "timestamp": "2025-12-30T00:44:00.703Z"
+    },
+    {
+      "userId": "user1",
+      "userName": "김철수",
+      "date": "2025-12-29",
+      "scores": [
+        {
+          "label": "최상화",
+          "score": 9
+        },
+        {
+          "label": "공감",
+          "score": 8
+        },
+        {
+          "label": "책임",
+          "score": 9
+        },
+        {
+          "label": "배움",
+          "score": 10
+        },
+        {
+          "label": "절친",
+          "score": 10
+        }
+      ],
+      "timestamp": "2025-12-30T00:49:56.406Z"
+    },
+    {
+      "userId": "user1",
+      "userName": "김철수",
+      "date": "2025-12-26",
+      "scores": [
+        {
+          "label": "최상화",
+          "score": 7
+        },
+        {
+          "label": "공감",
+          "score": 3
+        },
+        {
+          "label": "책임",
+          "score": 2
+        },
+        {
+          "label": "배움",
+          "score": 4
+        },
+        {
+          "label": "절친",
+          "score": 5
+        }
+      ],
+      "timestamp": "2025-12-30T04:16:56.692Z"
+    }
+  ]
+}
