@@ -35,22 +35,23 @@
         },
         {
           "label": "공감",
-          "score": 7
+          "score": 4
         },
         {
           "label": "책임",
-          "score": 9
+          "score": 3
         },
         {
           "label": "배움",
-          "score": 10
+          "score": 4
         },
         {
           "label": "절친",
-          "score": 6
+          "score": 2
         }
       ],
-      "timestamp": "2025-12-30T00:44:00.703Z"
+      "reflection": "테스트",
+      "timestamp": "2025-12-30T04:55:38.028Z"
     },
     {
       "userId": "user1",

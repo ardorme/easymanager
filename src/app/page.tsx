@@ -19,6 +19,7 @@ interface Response {
   userName: string;
   date: string;
   scores: LabelScore[];
+  reflection?: string;
   timestamp: string;
 }
 
@@ -29,16 +30,22 @@ interface Config {
   };
 }
 
+interface Questions {
+  question: string;
+  reflectionQuestion: string;
+}
+
 export default function Home() {
   const [user, setUser] = useState<User | null>(null);
   const [loginId, setLoginId] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
-  const [question, setQuestion] = useState('');
+  const [questions, setQuestions] = useState<Questions>({ question: '', reflectionQuestion: '' });
   const [config, setConfig] = useState<Config | null>(null);
   const [selectedDate, setSelectedDate] = useState(
     new Date().toISOString().split('T')[0]
   );
   const [scores, setScores] = useState<{ [key: string]: number }>({});
+  const [reflection, setReflection] = useState('');
   const [responses, setResponses] = useState<Response[]>([]);
   const [currentView, setCurrentView] = useState<'form' | 'results'>('form');
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
@@ -50,7 +57,7 @@ export default function Home() {
 
   useEffect(() => {
     if (user) {
-      loadQuestion();
+      loadQuestions();
       loadResponses();
       // 사용자의 레이블로 점수 초기화
       const labels = user.labels.split(' ');
@@ -79,11 +86,11 @@ export default function Home() {
     }
   };
 
-  const loadQuestion = async () => {
+  const loadQuestions = async () => {
     try {
       const res = await fetch('/api/questions');
       const data = await res.json();
-      setQuestion(data.question);
+      setQuestions(data);
     } catch (error) {
       showMessage('error', '질문을 불러오는데 실패했습니다.');
     }
@@ -126,6 +133,7 @@ export default function Home() {
           loadedScores[s.label] = s.score;
         });
         setScores(loadedScores);
+        setReflection(dateResponse.reflection || '');
       } else {
         // 기존 점수가 없으면 초기화
         const labels = user.labels.split(' ');
@@ -134,6 +142,7 @@ export default function Home() {
           initialScores[label] = 0;
         });
         setScores(initialScores);
+        setReflection('');
       }
     } catch (error) {
       console.error('점수를 불러오는데 실패했습니다.');
@@ -168,6 +177,7 @@ export default function Home() {
     setLoginId('');
     setLoginPassword('');
     setScores({});
+    setReflection('');
     setResponses([]);
     setCurrentView('form');
   };
@@ -213,6 +223,7 @@ export default function Home() {
       userName: user.name,
       date: selectedDate,
       scores: scoresArray,
+      reflection: reflection.trim(),
       timestamp: new Date().toISOString(),
     };
     
@@ -241,27 +252,27 @@ export default function Home() {
     setTimeout(() => setMessage(null), 5000);
   };
 
-  // 점수에 따른 배경색 계산 (1~10점) - 스타벅스 녹색 사용
+  // 점수에 따른 배경색 계산 (1~5점) - 스타벅스 녹색 사용
   const getScoreColor = (score: number): string => {
     if (!score || score < 1) return '#ffffff';
     
-    // 1-5: 빨강 파스텔 톤 (진한 빨강 -> 연한 빨강)
-    // 5: 흰색에 가까움
-    // 6-10: 스타벅스 녹색 파스텔 톤 (연한 녹색 -> 진한 스타벅스 녹색)
+    // 1-2: 빨강 파스텔 톤 (진한 빨강 -> 연한 빨강)
+    // 3: 흰색에 가까움
+    // 4-5: 스타벅스 녹색 파스텔 톤 (연한 녹색 -> 진한 스타벅스 녹색)
     
-    if (score <= 5) {
+    if (score <= 3) {
       // 1점: 진한 빨강 파스텔 (#ffcccc)
-      // 5점: 흰색에 가까운 연한 빨강 (#fff5f5)
-      const intensity = (5 - score) / 4; // 1점=1, 5점=0
+      // 3점: 흰색에 가까운 연한 빨강 (#fff5f5)
+      const intensity = (3 - score) / 2; // 1점=1, 3점=0
       const r = 255;
       const g = Math.floor(255 - (intensity * 51)); // 204~255
       const b = Math.floor(255 - (intensity * 51)); // 204~255
       return `rgb(${r}, ${g}, ${b})`;
     } else {
       // 스타벅스 녹색: #00704A (R:0, G:112, B:74)
-      // 6점: 흰색에 가까운 연한 스타벅스 녹색
-      // 10점: 진한 스타벅스 녹색 파스텔
-      const intensity = (score - 5) / 5; // 6점=0.2, 10점=1
+      // 4점: 연한 스타벅스 녹색 (#e6f4ef)
+      // 5점: 진한 스타벅스 녹색 파스텔 (#b3e0d1)
+      const intensity = (score - 3) / 2; // 4점=0.5, 5점=1
       
       // 연한 파스텔(#e6f4ef)에서 진한 파스텔(#b3e0d1)로
       const r = Math.floor(230 - (intensity * 51)); // 230 -> 179
@@ -279,10 +290,11 @@ export default function Home() {
     const labels = user.labels.split(' ');
     
     // 날짜별로 점수 맵핑
-    const dataByDate: { [date: string]: { userName?: string; scores: { [label: string]: number } } } = {};
+    const dataByDate: { [date: string]: { userName?: string; scores: { [label: string]: number }; reflection?: string } } = {};
     responses.forEach(response => {
       dataByDate[response.date] = {
         userName: response.userName,
+        reflection: response.reflection,
         scores: {}
       };
       response.scores.forEach(score => {
@@ -418,7 +430,7 @@ export default function Home() {
           
           <div style={{ background: '#f9fafb', padding: '20px', borderRadius: '8px', marginBottom: '24px' }}>
             <h3 style={{ color: '#333', marginBottom: '20px', fontSize: '1.1rem' }}>
-              {question}
+              {questions.question}
             </h3>
             
             {labels.map((label) => (
@@ -448,7 +460,7 @@ export default function Home() {
                   )}
                 </label>
                 <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', flex: 1 }}>
-                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((score) => (
+                  {[1, 2, 3, 4, 5].map((score) => (
                     <button
                       key={score}
                       type="button"
@@ -464,6 +476,17 @@ export default function Home() {
             ))}
           </div>
           
+          <div className="form-group">
+            <label>{questions.reflectionQuestion}</label>
+            <textarea
+              value={reflection}
+              onChange={(e) => setReflection(e.target.value)}
+              placeholder="오늘 강점을 활용하면서 느꼈던 점, 배운 점, 개선하고 싶은 점 등을 자유롭게 작성해주세요."
+              rows={5}
+              style={{ minHeight: '120px' }}
+            />
+          </div>
+          
           <button type="submit" className="btn btn-primary">
             제출하기
           </button>
@@ -475,7 +498,7 @@ export default function Home() {
               {user.role === 'admin' ? '전체 응답 결과' : '내 기록'}
             </h2>
             <p style={{ fontSize: '1rem', color: '#667eea', fontWeight: 600 }}>
-              {question}
+              {questions.question}
             </p>
           </div>
           
@@ -496,6 +519,7 @@ export default function Home() {
                         {label}
                       </th>
                     ))}
+                    <th className="reflection-column">느낀점</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -524,6 +548,20 @@ export default function Home() {
                           </td>
                         );
                       })}
+                      <td className="reflection-cell">
+                        {tableData.dataByDate[response.date]?.reflection ? (
+                          <div style={{ 
+                            maxWidth: '300px', 
+                            whiteSpace: 'pre-wrap',
+                            wordBreak: 'break-word',
+                            textAlign: 'left'
+                          }}>
+                            {tableData.dataByDate[response.date].reflection}
+                          </div>
+                        ) : (
+                          <span style={{ color: '#999' }}>-</span>
+                        )}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -549,7 +587,17 @@ export default function Home() {
                     border: '1px solid #e5e7eb',
                     borderRadius: '4px'
                   }} />
-                  <span style={{ fontSize: '0.9rem', color: '#666' }}>낮음 (1-3점)</span>
+                  <span style={{ fontSize: '0.9rem', color: '#666' }}>낮음 (1-2점)</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <div style={{ 
+                    width: '30px', 
+                    height: '30px', 
+                    backgroundColor: getScoreColor(3),
+                    border: '1px solid #e5e7eb',
+                    borderRadius: '4px'
+                  }} />
+                  <span style={{ fontSize: '0.9rem', color: '#666' }}>중간 (3점)</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <div style={{ 
@@ -559,17 +607,7 @@ export default function Home() {
                     border: '1px solid #e5e7eb',
                     borderRadius: '4px'
                   }} />
-                  <span style={{ fontSize: '0.9rem', color: '#666' }}>중간 (4-6점)</span>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <div style={{ 
-                    width: '30px', 
-                    height: '30px', 
-                    backgroundColor: getScoreColor(10),
-                    border: '1px solid #e5e7eb',
-                    borderRadius: '4px'
-                  }} />
-                  <span style={{ fontSize: '0.9rem', color: '#666' }}>높음 (7-10점)</span>
+                  <span style={{ fontSize: '0.9rem', color: '#666' }}>높음 (4-5점)</span>
                 </div>
               </div>
             </div>
