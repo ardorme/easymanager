@@ -435,22 +435,20 @@ export default function Home() {
             
             {labels.map((label) => (
               <div key={label} style={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                marginBottom: '16px',
-                gap: '16px'
+                marginBottom: '16px'
               }}>
                 <label style={{ 
                   fontSize: '1rem', 
                   fontWeight: 600,
                   color: '#333',
-                  minWidth: '100px',
-                  margin: 0
+                  margin: 0,
+                  display: 'block',
+                  marginBottom: '6px'
                 }}>
                   {label}
                   {scores[label] > 0 && (
                     <span style={{ 
-                      marginLeft: '8px', 
+                      marginLeft: '6px', 
                       fontSize: '0.85rem', 
                       color: '#667eea',
                       fontWeight: 'normal'
@@ -459,7 +457,7 @@ export default function Home() {
                     </span>
                   )}
                 </label>
-                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', flex: 1 }}>
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                   {[1, 2, 3, 4, 5].map((score) => (
                     <button
                       key={score}
