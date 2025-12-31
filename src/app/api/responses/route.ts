@@ -9,7 +9,7 @@ export async function GET(request: Request) {
     const role = searchParams.get('role');
     
     let query = supabase
-      .from('responses')
+      .from('t_str_response')
       .select('*')
       .order('date', { ascending: false });
     
@@ -28,8 +28,11 @@ export async function GET(request: Request) {
     // 데이터 변환 (DB 컬럼명 → 앱 형식)
     const responses = (data || []).map(row => ({
       userId: row.user_id,
+      userName: row.user_name || '',
       date: row.date,
-      answers: row.answers
+      scores: row.answers || [],  // answers → scores로 변환
+      reflection: row.reflection || '',
+      timestamp: row.created_at
     }));
     
     return NextResponse.json({ responses });
@@ -42,16 +45,30 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const newResponse = await request.json();
-    const { userId, date, answers } = newResponse;
+    console.log('받은 데이터:', newResponse);
+    
+    const { userId, userName, date, scores, reflection, timestamp } = newResponse;
+    
+    // scores가 제대로 전달되었는지 확인
+    if (!scores || scores.length === 0) {
+      console.error('scores 데이터가 없습니다:', newResponse);
+      return NextResponse.json(
+        { success: false, message: '점수 데이터가 없습니다.' },
+        { status: 400 }
+      );
+    }
     
     // UPSERT: 같은 userId와 date가 있으면 업데이트, 없으면 삽입
     const { data, error } = await supabase
-      .from('responses')
+      .from('t_str_response')
       .upsert(
         {
           user_id: userId,
+          user_name: userName,
           date: date,
-          answers: answers,
+          answers: scores,  // scores를 answers에 저장
+          reflection: reflection || '',
+          created_at: timestamp,
           updated_at: new Date().toISOString()
         },
         {
@@ -67,6 +84,8 @@ export async function POST(request: Request) {
         { status: 500 }
       );
     }
+    
+    console.log('저장 성공:', data);
     
     return NextResponse.json({ success: true, data: newResponse });
   } catch (error) {
