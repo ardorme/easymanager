@@ -35,23 +35,23 @@
         },
         {
           "label": "공감",
-          "score": 4
+          "score": 5
         },
         {
           "label": "책임",
-          "score": 3
+          "score": 5
         },
         {
           "label": "배움",
-          "score": 4
+          "score": 5
         },
         {
           "label": "절친",
-          "score": 2
+          "score": 5
         }
       ],
-      "reflection": "테스트\n테스트\n테스트11",
-      "timestamp": "2025-12-30T15:14:53.690Z"
+      "reflection": "테스트\n테스트\n테스트",
+      "timestamp": "2025-12-30T15:22:56.995Z"
     },
     {
       "userId": "user1",
