@@ -254,33 +254,17 @@ export default function Home() {
 
   // 점수에 따른 배경색 계산 (1~5점) - 스타벅스 녹색 사용
   const getScoreColor = (score: number): string => {
-    if (!score || score < 1) return '#ffffff';
     
-    // 1-2: 빨강 파스텔 톤 (진한 빨강 -> 연한 빨강)
-    // 3: 흰색에 가까움
-    // 4-5: 스타벅스 녹색 파스텔 톤 (연한 녹색 -> 진한 스타벅스 녹색)
+    // 스타벅스 녹색: #00704A (R:0, G:112, B:74)
+    const intensity = score / 2; // 4점=0.5, 5점=1
     
-    if (score <= 3) {
-      // 1점: 진한 빨강 파스텔 (#ffcccc)
-      // 3점: 흰색에 가까운 연한 빨강 (#fff5f5)
-      const intensity = (3 - score) / 2; // 1점=1, 3점=0
-      const r = 255;
-      const g = Math.floor(255 - (intensity * 51)); // 204~255
-      const b = Math.floor(255 - (intensity * 51)); // 204~255
-      return `rgb(${r}, ${g}, ${b})`;
-    } else {
-      // 스타벅스 녹색: #00704A (R:0, G:112, B:74)
-      // 4점: 연한 스타벅스 녹색 (#e6f4ef)
-      // 5점: 진한 스타벅스 녹색 파스텔 (#b3e0d1)
-      const intensity = (score - 3) / 2; // 4점=0.5, 5점=1
-      
-      // 연한 파스텔(#e6f4ef)에서 진한 파스텔(#b3e0d1)로
-      const r = Math.floor(230 - (intensity * 51)); // 230 -> 179
-      const g = Math.floor(244 - (intensity * 20)); // 244 -> 224
-      const b = Math.floor(239 - (intensity * 30)); // 239 -> 209
-      
-      return `rgb(${r}, ${g}, ${b})`;
-    }
+    // 연한 파스텔(#e6f4ef)에서 진한 파스텔(#b3e0d1)로
+    const r = Math.floor(230 - (intensity * 51)); // 230 -> 179
+    const g = Math.floor(244 - (intensity * 20)); // 244 -> 224
+    const b = Math.floor(239 - (intensity * 30)); // 239 -> 209
+    
+    return `rgb(${r}, ${g}, ${b})`;
+    
   };
 
   // Excel 형식 테이블 데이터 준비 (X축: 레이블, Y축: 날짜)
