@@ -208,11 +208,12 @@ export default function Home() {
     const labels = user.labels.split(' ');
     const allScored = labels.every(label => scores[label] && scores[label] > 0);
     
+    /*
     if (!allScored) {
       showMessage('error', '모든 항목에 점수를 입력해주세요.');
       return;
     }
-    
+    */
     const scoresArray = labels.map(label => ({
       label,
       score: scores[label],
@@ -447,7 +448,7 @@ export default function Home() {
                       key={score}
                       type="button"
                       className={`rating-btn ${scores[label] === score ? 'active' : ''}`}
-                      onClick={() => setScores({ ...scores, [label]: score })}
+                      onClick={() => setScores({ ...scores, [label]: scores[label] === score ? 0 : score })}
                       style={{ fontSize: '1rem' }}
                     >
                       {score}
